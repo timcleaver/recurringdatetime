@@ -1,0 +1,25 @@
+/**
+ * Recurring Date and Time Extension for Symphony CMS based on the date and
+ * time extension by Nils Hörrmann, post@nilshoerrmann.dde
+ *
+ * @author: Timothy Cleaver.
+ * @date: march 2010
+ */
+
+.field-datetime span.interval {
+	border-top: none !important;
+	margin: 0 !important;
+	padding-top: 0 !important;
+}
+
+.field-datetime span select {
+	margin: 0;
+}
+
+.field-datetime span select.error {
+	background: #ffb;
+}
+
+.field-datetime span.interval em {
+	top: 4px !important;
+}
