@@ -1,25 +1,21 @@
 /**
  * Recurring Date and Time Extension for Symphony CMS based on the date and
- * time extension by Nils Hörrmann, post@nilshoerrmann.dde
+ * time extension by Nils Hoerrmann, post@nilshoerrmann.dde
  *
  * @author: Timothy Cleaver.
- * @date: march 2010
+ * @date: March 2010
  */
 
-.field-datetime span.interval {
-	border-top: none !important;
-	margin: 0 !important;
-	padding-top: 0 !important;
+/*
+ * because the datetime.css uses !important, we need to too as otherwise this
+ * won't override those in datetime.css
+ */
+.field-datetime span.end {
+	border-top: 1px solid #c2c2c2 !important;
+	margin: 2px 0 0 !important;
+	padding-top: 12px !important;
 }
 
-.field-datetime span select {
-	margin: 0;
-}
-
-.field-datetime span select.error {
-	background: #ffb;
-}
-
-.field-datetime span.interval em {
-	top: 4px !important;
+.field-datetime span.end em {
+	top: 15px !important;
 }
