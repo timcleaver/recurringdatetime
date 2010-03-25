@@ -38,7 +38,18 @@
 		}
 
 		/**
-		 * Add the recurrence selector to the inpt xml element. consruct the selector
+		 * Add the title. We overload this so that we don't offer help. We are doing
+		 * it differently and the help is inaccurate for us.
+		 *
+		 * @param XMLElement &$wrapper
+		 *	the parent element of the xml document to add this to.
+		 */
+		protected function addTitle(&$wrapper) {
+			$wrapper->setValue($this->get('label'));
+		}
+	
+		/**
+		 * Add the recurrence selector to the input xml element. consruct the selector
 		 * based on the input form submission data. If a selection has been made, then
 		 * reflect this in the current display.
 		 *
@@ -51,7 +62,10 @@
 		 * @return XMLElement
 		 *	return the constructed xml element.
 		 */
-		protected function addPublishRecurrenceSelector(&$wrapper, $data, $index) {
+		protected function addPublishRecurrenceSelector(XMLElement &$wrapper, array $data, $index) {
+			if (!is_int($index)) {
+				die(__(sprintf('Passed %s as third argument to %s expecting integer on line: %d of file: %s', $index, __FUNCTION__, __LINE__, __FILE__)));
+			}
 			$fields = array();
 			$selector = null;
 			if($data != null and isset($data['unit']) and is_array($data['unit'])) {
@@ -76,7 +90,7 @@
 		}
 
 		/**
-		 * Add the content area to the inpt xml element. Consruct the text area
+		 * Add the content area to the inpt xml element. Construct the text area
 		 * based on the input form submission data.
 		 *
 		 * @param XMLElement &$wrapper
@@ -88,8 +102,11 @@
 		 * @return XMLElement
 		 *	return the constructed xml element.
 		 */
-		protected function addPublishContent(&$wrapper, $data, $index) {
-			$span = new XMLElement('span', null, array('class', 'content'));
+		protected function addPublishContent(XMLElement &$wrapper, array $data, $index) {
+			if (!is_int($index)) {
+				die(__(sprintf('Passed %s as third argument to %s expecting integer on line: %d of file: %s', $index, __FUNCTION__, __LINE__, __FILE__)));
+			}
+			$span = new XMLElement('span', null, array('class' => 'content'));
 			$span->appendChild(new XMLElement('em', __('content'), array()));
 			$content = Widget::Textarea($this->getFieldName() . '[content][]', 5, 60, is_array($data['content']) ? $data['content'][$index - 1] : $data['content']);
 			$span->appendChild($content);
@@ -114,25 +131,33 @@
 		 *	text to append to the field name of this in the display. this defaults
 		 *	to null.
 		 */
-		function displayPublishPanel(&$wrapper, $data=NULL, $flagWithError=NULL, $fieldnamePrefix=NULL, $fieldnameSuffix=NULL) {
+		function displayPublishPanel(XMLElement &$wrapper, array $data=null, $flagWithError=null, $fieldnamePrefix=null, $fieldnameSuffix=null) {
 			$this->addHeader();
 			// add the additional header for this.
 			Administration::instance()->Page->addStylesheetToHead(URL . '/extensions/recurringdatetime/assets/recurringdatetime.css', 'screen', 202, false);
 			$this->addTitle($wrapper);
-			$this->ensureArrayValues($data);
 
+			if ($data == null) {
+				$data = array();
+			}
+			$this->ensureArrayValues($data);
 			// have to override the default styles applied by the field manager/field classes
 			// so that this appears as the datetime field for css and javascript.
 			$wrapper->setAttribute('class', 'field field-datetime ui-sortable');
 			$count = 1;
+			// we always want to print at least one instance, even when data is empty.
 			do {
 				$label = $this->addPublishLabel($wrapper, $data, $count);
 				$this->addPublishStart($label, $data, $count);
+				$label = $this->addPublishLabel($wrapper, $data, $count);
 				$this->addPublishEnd($label, $data, $count);
+				$label = $this->addPublishLabel($wrapper, $data, $count);
 				$this->addPublishRecurrenceSelector($label, $data, $count);
+				$label = $this->addPublishLabel($wrapper, $data, $count);
 				$this->addPublishContent($label, $data, $count);
+				$label = $this->addPublishLabel($wrapper, $data, $count);
 				$this->addPublishSettings($label, $count);
-			} while($data != null && $count++ < count($data['start']));
+			} while($count++ < count($data['start']));
 			$this->addPublishNewLink($wrapper);
 		}
 
@@ -176,7 +201,10 @@
 		 *	the processed data as an array structured appropriately for insertion
 		 *	into the database.
 		 */
-		function processRawFieldData($data, &$status, $simulate=false, $entry_id=NULL) {
+		function processRawFieldData(array $data, &$status, $simulate=false, $entry_id=null) {
+			if (!is_bool($simulate)) {
+				die(__(sprintf('Passed %s as third argument to %s expecting boolean on line: %d of file: %s', $simulate, __FUNCTION__, __LINE__, __FILE__)));
+			}
 			$fields = parent::processRawFieldData($data, $status, $simulate, $entry_id);
 			// if the parent returns no fields, we do the same.
 			if($fields == null) {
@@ -217,7 +245,10 @@
 		 * @return XMLElement
 		 *	the constructed date element.
 		 */
-		protected function addFormattedDateTime(&$wrapper, $index, $entry) {
+		protected function addFormattedDateTime(XMLElement &$wrapper, $index, array $entry) {
+			if (!is_int($index)) {
+				die(__(sprintf('Passed %s as second argument to %s expecting integer on line: %d of file: %s', $index, __FUNCTION__, __LINE__, __FILE__)));
+			}
 			$date = new XMLElement('date');
 			$date->setAttribute('timeline', $index);
 			// set the default atrtribute type to exact
@@ -257,10 +288,15 @@
 		 *
 		 * @param XMLElement $wrapper
 		 *	the xml element to append the formatted content xml to.
+		 * @param string $content
+		 *	the content to append to the wrapper
 		 * @return XMLElement
 		 *	the constructed content xml element.
 		 */
-		protected function addFormattedContent(&$wrapper, $content) {
+		protected function addFormattedContent(XMLElement &$wrapper, $content) {
+			if (!is_string($content)) {
+				die(__(sprintf('Passed %s as second argument to %s expecting string on line: %d of file: %s', $content, __FUNCTION__, __LINE__, __FILE__)));
+			}
 			$content = new XMLElement('content', $content);
 			$wrapper->appendChild($content);
 			return $content;
@@ -271,11 +307,16 @@
 		 * to arrays of their values, construct the xml output of this field.
 		 *
 		 * @param XMLElement $wrapper
+		 *	the xml element to append the formatted content xml to.
 		 * @param array $data
+		 *	the aarray of data to transform to entries and add as formatted date times.
 		 * @param boolean $encode
-		 * @param string $mode
+		 *	true if the data is to be encoded.
 		 */
-		public function appendFormattedElement(&$wrapper, $data, $encode=false) {
+		public function appendFormattedElement(XMLElement &$wrapper, array $data, $encode=false) {
+			if (!is_bool($encode)) {
+				die(__(sprintf('Passed %s as third argument to %s expecting boolean on line: %d of file: %s', $encode, __FUNCTION__, __LINE__, __FILE__)));
+			}
 			$this->ensureArrayValues($data);
 			$datetime = new XMLElement($this->get('element_name'));
 			$transformed = $this->toEntryArray($data);
