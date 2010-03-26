@@ -38,6 +38,15 @@
 		}
 
 		/**
+		 * Add the required header information to the page.
+		 */
+		protected function addHeader() {
+			Administration::instance()->Page->addScriptToHead(URL . '/extensions/datetime/assets/jquery-ui.js', 100, true);
+			Administration::instance()->Page->addScriptToHead(URL . '/extensions/recurringdatetime/assets/recurringdatetime.js', 201, false);
+			Administration::instance()->Page->addStylesheetToHead(URL . '/extensions/datetime/assets/datetime.css', 'screen', 202, false);
+		}
+
+		/**
 		 * Add the title. We overload this so that we don't offer help. We are doing
 		 * it differently and the help is inaccurate for us.
 		 *
